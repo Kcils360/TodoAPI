@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 namespace TodoAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class TodoController : ControllerBase
     {
         // GET: api/Todo
@@ -19,23 +19,13 @@ namespace TodoAPI.Controllers
             return JsonConvert.DeserializeObject(text).ToString();
         }
 
-        // GET: api/Todo/5
-        [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
-        {
-            return "value";
-        }
 
         // POST: api/Todo
         [HttpPost]
-        public void Post([FromBody] string value)
+        public void Post([FromBody] object value)
         {
-        }
-
-        // PUT: api/Todo/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
+            //this is not correct.  figure out how to write the json
+            System.IO.File.AppendAllTextAsync(@"C:\Users\Gregory\Desktop\TodoAPI\TodoAPI\Data\todos.json", value.ToString());
         }
 
         // DELETE: api/ApiWithActions/5

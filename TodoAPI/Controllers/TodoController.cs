@@ -4,18 +4,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace TodoAPI.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("[controller]")]
     public class TodoController : ControllerBase
     {
         // GET: api/Todo
         [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
+        public object Get()
+        {            
+            return JsonConvert.DeserializeObject(text).ToString();
         }
 
         // GET: api/Todo/5
@@ -42,5 +43,8 @@ namespace TodoAPI.Controllers
         public void Delete(int id)
         {
         }
+
+        string text = System.IO.File.ReadAllText(@"C:\Users\Gregory\Desktop\TodoAPI\TodoAPI\Data\todos.json");
+        
     }
 }

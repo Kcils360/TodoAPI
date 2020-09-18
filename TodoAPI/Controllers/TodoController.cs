@@ -12,11 +12,14 @@ namespace TodoAPI.Controllers
     [Route("api/[controller]")]
     public class TodoController : ControllerBase
     {
+        string text = System.IO.File.ReadAllText(@".\Data\todos.txt");
+
         // GET: api/Todo
         [HttpGet]
         public object Get()
-        {            
-            return JsonConvert.DeserializeObject(text).ToString();
+        {
+            string sndtxt = "[ " + text + " ]";
+            return JsonConvert.DeserializeObject(sndtxt).ToString();
         }
 
 
@@ -25,7 +28,7 @@ namespace TodoAPI.Controllers
         public void Post([FromBody] object value)
         {
             //this is not correct.  figure out how to write the json
-            System.IO.File.AppendAllTextAsync(@"C:\Users\Gregory\Desktop\TodoAPI\TodoAPI\Data\todos.json", value.ToString());
+            System.IO.File.AppendAllTextAsync(@".\Data\todos.txt", value.ToString()+",");
         }
 
         // DELETE: api/ApiWithActions/5
@@ -34,7 +37,6 @@ namespace TodoAPI.Controllers
         {
         }
 
-        string text = System.IO.File.ReadAllText(@"C:\Users\Gregory\Desktop\TodoAPI\TodoAPI\Data\todos.json");
         
     }
 }

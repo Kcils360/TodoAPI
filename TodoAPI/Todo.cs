@@ -8,5 +8,6 @@ namespace TodoAPI
     public class Todo
     {
         public string title { get; set; }
+        public string completed { get; set; }
     }
 }

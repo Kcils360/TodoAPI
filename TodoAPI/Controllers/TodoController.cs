@@ -4,22 +4,26 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.IO;
+using Newtonsoft.Json.Linq;
 
 namespace TodoAPI.Controllers
+
 {
     [ApiController]
     [Route("api/[controller]")]
     public class TodoController : ControllerBase
     {
-        string text = System.IO.File.ReadAllText(@".\Data\todos.txt");
+        
 
         // GET: api/Todo
         [HttpGet]
         public object Get()
         {
-            string sndtxt = "[ " + text + " ]";
-            return JsonConvert.DeserializeObject(sndtxt).ToString();
+            //read the json file, transmit the array only
+            return JsonSerializer.Deserialize<Todo>(@".\Data\todos.json");
         }
 
 
@@ -28,7 +32,7 @@ namespace TodoAPI.Controllers
         public void Post([FromBody] object value)
         {
             //this is not correct.  figure out how to write the json
-            System.IO.File.AppendAllTextAsync(@".\Data\todos.txt", value.ToString()+",");
+            System.IO.File.AppendAllText(@".\Data\todos.txt", value.ToString()+",");
         }
 
         // DELETE: api/ApiWithActions/5

@@ -39,6 +39,9 @@ namespace TodoAPI.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+            //read the json file
+            //remove the desired object
+            //re-write the whole file
         }
 
         

@@ -23,16 +23,27 @@ namespace TodoAPI.Controllers
         public object Get()
         {
             //read the json file, transmit the array only
-            return JsonSerializer.Deserialize<Todo>(@".\Data\todos.json");
+            var stJson = System.IO.File.ReadAllText(@".\Data\todos.json");
+            return JsonSerializer.Deserialize<Todo[]>(stJson).ToArray();
+            
         }
 
 
         // POST: api/Todo
         [HttpPost]
-        public void Post([FromBody] object value)
+        public void Post([FromBody] Todo newTodo)
         {
-            //this is not correct.  figure out how to write the json
-            System.IO.File.AppendAllText(@".\Data\todos.txt", value.ToString()+",");
+            string path = @".\Data\todos.json";
+            Todo tmpTodo = new Todo { title = newTodo.title, completed = newTodo.completed };
+
+            var stJson = System.IO.File.ReadAllText(path);
+            var json = JsonSerializer.Deserialize<Todo[]>(stJson).ToList();
+
+            List<Todo> tmpAr = new List<Todo>(json);
+            tmpAr.Add(tmpTodo);
+            string str = JsonSerializer.Serialize(tmpAr.ToArray());
+
+            System.IO.File.WriteAllText(path, str);           
         }
 
         // DELETE: api/ApiWithActions/5
@@ -44,6 +55,21 @@ namespace TodoAPI.Controllers
             //re-write the whole file
         }
 
-        
+        // UPDATE: 
+        //public void Post([FromBody] Todo edit)
+        //{
+        //    var stJson = System.IO.File.ReadAllText(@".\Data\todos.json");
+        //    var json = JsonSerializer.Deserialize<Todo[]>(stJson).ToArray();
+        //    foreach (var td in json)
+        //    {
+        //        if (td.title == edit.title)
+        //        {
+        //            td.completed = true;
+        //        }
+        //    }
+            //re-write json file
+            //return the item
+        //}
+
     }
 }

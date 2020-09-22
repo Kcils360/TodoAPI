@@ -37,9 +37,9 @@ namespace TodoAPI.Controllers
             Todo tmpTodo = new Todo { title = newTodo.title, completed = newTodo.completed };
 
             var stJson = System.IO.File.ReadAllText(path);
-            var json = JsonSerializer.Deserialize<Todo[]>(stJson).ToList();
+            var liJson = JsonSerializer.Deserialize<Todo[]>(stJson).ToList();
 
-            List<Todo> tmpAr = new List<Todo>(json);
+            List<Todo> tmpAr = new List<Todo>(liJson);
             tmpAr.Add(tmpTodo);
             string str = JsonSerializer.Serialize(tmpAr.ToArray());
 
@@ -55,21 +55,24 @@ namespace TodoAPI.Controllers
             //re-write the whole file
         }
 
-        // UPDATE: 
-        //public void Post([FromBody] Todo edit)
-        //{
-        //    var stJson = System.IO.File.ReadAllText(@".\Data\todos.json");
-        //    var json = JsonSerializer.Deserialize<Todo[]>(stJson).ToArray();
-        //    foreach (var td in json)
-        //    {
-        //        if (td.title == edit.title)
-        //        {
-        //            td.completed = true;
-        //        }
-        //    }
+        // UPDATE: api/todo
+        [HttpPut]
+        public void Put([FromBody] Todo edit)
+        {
+            string path = @".\Data\todos.json";
+
+            var stJson = System.IO.File.ReadAllText(path);
+            List<Todo> liJson = JsonSerializer.Deserialize<Todo[]>(stJson).ToList();
+
+            List<Todo> tmpAr = new List<Todo>(liJson);
+            int idx = tmpAr.FindIndex(x => x.title == edit.title);
+            tmpAr[idx].completed = edit.completed;
+
+            string str = JsonSerializer.Serialize(tmpAr.ToArray());
+            System.IO.File.WriteAllText(path, str);
             //re-write json file
-            //return the item
-        //}
+            //return Get();
+        }
 
     }
 }

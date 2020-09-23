@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.IO;
-using Newtonsoft.Json.Linq;
 
 namespace TodoAPI.Controllers
 
@@ -33,45 +27,52 @@ namespace TodoAPI.Controllers
         [HttpPost]
         public void Post([FromBody] Todo newTodo)
         {
+            //read the json file
             string path = @".\Data\todos.json";
             Todo tmpTodo = new Todo { title = newTodo.title, completed = newTodo.completed };
-
+            //convert to a list
             var stJson = System.IO.File.ReadAllText(path);
             var liJson = JsonSerializer.Deserialize<Todo[]>(stJson).ToList();
-
+            //add new todo
             List<Todo> tmpAr = new List<Todo>(liJson);
             tmpAr.Add(tmpTodo);
+            //re-write file 
             string str = JsonSerializer.Serialize(tmpAr.ToArray());
-
             System.IO.File.WriteAllText(path, str);           
-        }
-
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-            //read the json file
-            //remove the desired object
-            //re-write the whole file
         }
 
         // UPDATE: api/todo
         [HttpPut]
         public void Put([FromBody] Todo edit)
         {
+            //read json file
             string path = @".\Data\todos.json";
-
             var stJson = System.IO.File.ReadAllText(path);
             List<Todo> liJson = JsonSerializer.Deserialize<Todo[]>(stJson).ToList();
-
+            //find and edit the requested todo
             List<Todo> tmpAr = new List<Todo>(liJson);
             int idx = tmpAr.FindIndex(x => x.title == edit.title);
             tmpAr[idx].completed = edit.completed;
-
+            //re-write json file
             string str = JsonSerializer.Serialize(tmpAr.ToArray());
             System.IO.File.WriteAllText(path, str);
-            //re-write json file
-            //return Get();
+        }
+
+        // DELETE: api/ApiWithActions/title
+        [HttpDelete("{title}")]
+        public object Delete(string title)
+        {
+            //read the json file
+            string path = @".\Data\todos.json";
+            var stJson = System.IO.File.ReadAllText(path);
+            var liJson = JsonSerializer.Deserialize<Todo[]>(stJson).ToList();
+            //remove the desired object
+            List<Todo> tmpList = liJson.Where(t => t.title != title).ToList();
+            //re-write the whole file
+            string str = JsonSerializer.Serialize(tmpList.ToArray());
+            System.IO.File.WriteAllText(path, str);
+            //return the new list
+            return tmpList.ToArray();
         }
 
     }

@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
+using System.Runtime.CompilerServices;
 
 namespace TodoAPI.Controllers
 
@@ -10,14 +11,13 @@ namespace TodoAPI.Controllers
     [Route("api/[controller]")]
     public class TodoController : ControllerBase
     {
-        
+        string _path = @".\Data\todos.json";
 
         // GET: api/Todo
         [HttpGet]
         public ActionResult<Todo[]> Get()
         {
-            //read the json file, transmit the array only
-            var stJson = System.IO.File.ReadAllText(@".\Data\todos.json");
+            string stJson = System.IO.File.ReadAllText(_path);
             return Ok(JsonSerializer.Deserialize<Todo[]>(stJson));            
         }
 
@@ -26,16 +26,9 @@ namespace TodoAPI.Controllers
         [HttpPost]
         public ActionResult<Todo> Post([FromBody] Todo newTodo)
         {
-            //read the json file
-            string path = @".\Data\todos.json";
-            //convert to a list
-            var stJson = System.IO.File.ReadAllText(path);
-            var liJson = JsonSerializer.Deserialize<Todo[]>(stJson).ToList();
-            //add new todo
+            var liJson = readJson(_path);
             liJson.Add(newTodo);
-            //re-write file 
-            string str = JsonSerializer.Serialize(liJson);
-            System.IO.File.WriteAllText(path, str);
+            writeJson(liJson);
             return Ok(newTodo);
         }
 
@@ -43,16 +36,10 @@ namespace TodoAPI.Controllers
         [HttpPut]
         public ActionResult<Todo> Put([FromBody] Todo edit)
         {
-            //read json file
-            string path = @".\Data\todos.json";
-            var stJson = System.IO.File.ReadAllText(path);
-            List<Todo> liJson = JsonSerializer.Deserialize<Todo[]>(stJson).ToList();
-            //find and edit the requested todo
+            var liJson = readJson(_path);
             Todo item = liJson.Find(i => i.title == edit.title);
             item.completed = edit.completed;
-            //re-write json file
-            string str = JsonSerializer.Serialize(liJson);
-            System.IO.File.WriteAllText(path, str);
+            writeJson(liJson);
             return Ok(item);
         }
 
@@ -60,17 +47,23 @@ namespace TodoAPI.Controllers
         [HttpDelete("{title}")]
         public ActionResult<string> Delete(string title)
         {
-            //read the json file
-            string path = @".\Data\todos.json";
-            var stJson = System.IO.File.ReadAllText(path);
-            var liJson = JsonSerializer.Deserialize<Todo[]>(stJson).ToList();
-            //remove the desired object
+            var liJson = readJson(_path);
             List<Todo> tmpList = liJson.Where(t => t.title != title).ToList();
-            //re-write the whole file
-            string str = JsonSerializer.Serialize(tmpList.ToArray());
-            System.IO.File.WriteAllText(path, str);
-            //return the new list
+            writeJson(tmpList);
             return Ok(title);
+        }
+
+        //helper methods
+        private List<Todo> readJson(string path)
+        {
+            string stJson = System.IO.File.ReadAllText(path);
+            return JsonSerializer.Deserialize<Todo[]>(stJson).ToList();
+        }
+
+        private void writeJson(List<Todo> list)
+        {
+            string str = JsonSerializer.Serialize(list);
+            System.IO.File.WriteAllText(_path, str);
         }
 
     }
